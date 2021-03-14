@@ -22,9 +22,9 @@
 
 <div class="wrap" style="--border-color: {borderColor}">
   <pre
+    class="language-html"><code class="language-html"
     on:input={onInput}
-    contenteditable
-    class="language-html"><code class="language-html">{@html highlighted}
+    contenteditable>{@html highlighted}
     </code></pre>
   <iframe class="output" title="REPL Output" bind:this={outputElement} />
 </div>
@@ -39,6 +39,13 @@
     height: inherit;
     min-height: 5em;
     margin: 0;
+    flex-grow: 1;
+    display: flex;
+  }
+
+  code {
+    width: 100%;
+    height: 100%;
     flex-grow: 1;
   }
 
