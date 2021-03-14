@@ -1,13 +1,23 @@
 <script>
   import { highlight, languages } from "prismjs";
+  import { onMount } from "svelte";
 
   export let borderColor = "black";
   export let code = "<em>test</em>";
+
+  let outputElement = {};
   $: highlighted = highlight(code, languages.html, "html");
 
   const onInput = (e) => {
     code = e.target.innerText;
+    outputElement.contentDocument.body.innerHTML = code;
   };
+
+  onMount(() => {
+    outputElement.addEventListener("load", () => {
+      outputElement.contentDocument.body.innerHTML = code;
+    });
+  });
 </script>
 
 <div class="wrap" style="--border-color: {borderColor}">
@@ -16,9 +26,7 @@
     contenteditable
     class="language-html"><code class="language-html">{@html highlighted}
     </code></pre>
-  <div class="output">
-    {@html code}
-  </div>
+  <iframe class="output" title="REPL Output" bind:this={outputElement} />
 </div>
 
 <style>
@@ -28,13 +36,14 @@
   }
 
   pre {
-    height: 5em;
+    height: inherit;
+    min-height: 5em;
     margin: 0;
     flex-grow: 1;
   }
 
   .output {
-    margin: 8px;
     flex-grow: 1;
+    border: none;
   }
 </style>
