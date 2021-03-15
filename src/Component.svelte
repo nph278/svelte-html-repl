@@ -11,7 +11,8 @@
   let code = startingCode;
   $: outputElement.contentDocument &&
     (() => {
-      outputElement.contentDocument.querySelector("head").innerHTML += "<style>" + "html {background: white}" + "<style>"
+      outputElement.contentDocument.querySelector("head").innerHTML +=
+        "<" + "style>html {background: white}<" + "/style>";
       outputElement.contentDocument.body.innerHTML = code;
     })();
 
