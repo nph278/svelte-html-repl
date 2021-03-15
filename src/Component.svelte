@@ -118,10 +118,6 @@
   </div>
 </div>
 
-<pre style="color: red">
-  {tab}
-</pre>
-
 <style>
   button {
     background-color: rgb(82, 82, 82);
