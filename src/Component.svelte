@@ -1,53 +1,143 @@
 <script>
   import Misbehave from "misbehave";
-  import { highlightElement, languages } from "prismjs";
+  import { highlightElement } from "prismjs";
   import { onMount } from "svelte";
 
   export let borderColor = "black";
   export let startingCode = "<em>test</em>";
-
-  let inputElement = {};
+  export let startingJS = "";
+  export let startingCSS = "";
+  export let startingHTML = startingCode;
+  export let tab = "html";
+  let js = startingJS;
+  let css = startingCSS;
+  let html = startingHTML;
+  let htmlElement = {};
+  let jsElement = {};
+  let cssElement = {};
   let outputElement = {};
-  let code = startingCode;
-  $: outputElement.contentDocument &&
-    (() => {
-      outputElement.contentDocument.querySelector("head").innerHTML +=
-        "<" + "style>html {background: white}<" + "/style>";
-      outputElement.contentDocument.body.innerHTML = code;
-    })();
+
+  const setTab = (t) => {
+    tab = t;
+  };
 
   let setCode = (c) => {
     if (c !== undefined) {
-      code = c.prefix + c.suffix;
+      if (tab === "js") {
+        js = c.prefix + c.suffix;
+      } else if (tab === "css") {
+        css = c.prefix + c.suffix;
+      } else {
+        html = c.prefix + c.suffix;
+      }
     }
   };
 
+  $: outputElement.contentDocument &&
+    (() => {
+      outputElement.contentDocument.querySelector("head").innerHTML = `
+        ${"<"}style>
+        html {
+          background: white
+        }
+        ${css}
+        ${"<"}/style>
+        ${"<"}script defer>
+          ${js}
+        ${"<"}/script>
+      `;
+      outputElement.contentDocument.body.innerHTML = html;
+    })();
+
   onMount(() => {
     outputElement.addEventListener("load", () => {
-      outputElement.contentDocument.body.innerHTML = code;
+      outputElement.contentDocument.body.innerHTML = html;
     });
-    new Misbehave(inputElement, {
-      oninput: () => highlightElement(inputElement),
+
+    new Misbehave(htmlElement, {
+      oninput: () => highlightElement(htmlElement),
+      store: setCode,
+    });
+
+    new Misbehave(jsElement, {
+      oninput: () => highlightElement(jsElement),
+      store: setCode,
+    });
+
+    new Misbehave(cssElement, {
+      oninput: () => highlightElement(cssElement),
       store: setCode,
     });
   });
 </script>
 
-<div class="wrap" style="--border-color: {borderColor}">
-  <pre
-    class="language-html"><code class="language-html"
-  contenteditable="true"
-  autocorrect="off"
-  autocapitalize="off"
-  spellcheck="false"
-   bind:this={inputElement}
-  >
-    {startingCode}
+<div class="wrapwrap">
+  <div class="tabs">
+    <button on:click={() => setTab("html")}>HTML</button>
+    <button on:click={() => setTab("js")}>JS</button>
+    <button on:click={() => setTab("css")}>CSS</button>
+  </div>
+  <div class="wrap" style="--border-color: {borderColor}">
+    <pre
+      class="language-html"
+      class:gone={tab !==
+        "html"}><code class="language-html"
+        contenteditable="true"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+        bind:this={htmlElement}
+      >
+      {startingHTML}
+      </code></pre>
+    <pre
+      class="language-css"
+      class:gone={tab !==
+        "css"}><code class="language-css"
+      contenteditable="true"
+      autocorrect="off"
+      autocapitalize="off"
+      spellcheck="false"
+      bind:this={cssElement}
+    >
+    {startingCSS}
     </code></pre>
-  <iframe class="output" title="REPL Output" bind:this={outputElement} />
+    <pre
+      class="language-js"
+      class:gone={tab !==
+        "js"}><code class="language-js"
+      contenteditable="true"
+      autocorrect="off"
+      autocapitalize="off"
+      spellcheck="false"
+      bind:this={jsElement}
+    >
+    {startingJS}
+    </code></pre>
+    <iframe class="output" title="REPL Output" bind:this={outputElement} />
+  </div>
 </div>
 
+<pre style="color: red">
+  {tab}
+</pre>
+
 <style>
+  button {
+    background-color: rgb(82, 82, 82);
+    color: rgb(197, 197, 197);
+    border: none;
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
+    height: 1.5em;
+    transform: translate(0.1em, 0.3em);
+    margin: 0 0.1em;
+  }
+
+  button:active {
+    background-color: rgb(150, 150, 150);
+  }
+
   .wrap {
     display: flex;
     border: var(--border-color) 2px solid;
@@ -70,5 +160,9 @@
   .output {
     flex-grow: 1;
     border: none;
+  }
+
+  .gone {
+    display: none;
   }
 </style>
