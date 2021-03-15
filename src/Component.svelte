@@ -10,7 +10,10 @@
   let outputElement = {};
   let code = startingCode;
   $: outputElement.contentDocument &&
-    (outputElement.contentDocument.body.innerHTML = code);
+    (() => {
+      outputElement.contentDocument.querySelector("head").innerHTML += "<style>" + "html {background: white}" + "<style>"
+      outputElement.contentDocument.body.innerHTML = code;
+    })();
 
   let setCode = (c) => {
     if (c !== undefined) {
