@@ -31,6 +31,7 @@
     "dist"
   ],
   "dependencies": {
+    "misbehave": "^0.3.0",
     "prismjs": "^1.23.0"
   }
 }

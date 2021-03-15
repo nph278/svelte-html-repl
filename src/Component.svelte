@@ -1,21 +1,30 @@
 <script>
-  import { highlight, languages } from "prismjs";
+  import Misbehave from "misbehave";
+  import { highlightElement, languages } from "prismjs";
   import { onMount } from "svelte";
 
   export let borderColor = "black";
-  export let code = "<em>test</em>";
+  export let startingCode = "<em>test</em>";
 
+  let inputElement = {};
   let outputElement = {};
-  $: highlighted = highlight(code, languages.html, "html");
+  let code = startingCode;
+  $: outputElement.contentDocument &&
+    (outputElement.contentDocument.body.innerHTML = code);
 
-  const onInput = (e) => {
-    code = e.target.innerText;
-    outputElement.contentDocument.body.innerHTML = code;
+  let setCode = (c) => {
+    if (c !== undefined) {
+      code = c.prefix + c.suffix;
+    }
   };
 
   onMount(() => {
     outputElement.addEventListener("load", () => {
       outputElement.contentDocument.body.innerHTML = code;
+    });
+    new Misbehave(inputElement, {
+      oninput: () => highlightElement(inputElement),
+      store: setCode,
     });
   });
 </script>
@@ -23,8 +32,13 @@
 <div class="wrap" style="--border-color: {borderColor}">
   <pre
     class="language-html"><code class="language-html"
-    on:input={onInput}
-    contenteditable>{@html highlighted}
+  contenteditable="true"
+  autocorrect="off"
+  autocapitalize="off"
+  spellcheck="false"
+   bind:this={inputElement}
+  >
+    {startingCode}
     </code></pre>
   <iframe class="output" title="REPL Output" bind:this={outputElement} />
 </div>
@@ -39,7 +53,7 @@
     height: inherit;
     min-height: 5em;
     margin: 0;
-    flex-grow: 1;
+    width: 30em;
     display: flex;
   }
 
