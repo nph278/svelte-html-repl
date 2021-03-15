@@ -13,7 +13,7 @@ An HTML REPL built in svelte.
   import Repl from "svelte-html-repl";
 </script>
 
-<Repl borderColor="black" startingCode="<em>test</em>" />
+<Repl borderColor="black" startingHTML="<em>test</em>" startingCSS="" startingJS="" tab="html" />
 ```
 
 ## Contributing
